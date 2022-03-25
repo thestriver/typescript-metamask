@@ -4,39 +4,40 @@ import logo from './logo.svg';
 import './App.css';
 
 const App: React.FC = () => {
-  const [isWalletInstalled, setIsWalletInstalled] = useState<boolean>(false);
-  const [account, setAccount] = useState<string | null>(null);
+  const [isMetamaskInstalled, setIsMetamaskInstalled] = useState<boolean>(false);
+  const [ethereumAccount, setEthereumAccount] = useState<string | null>(null);
   
 
   useEffect(() => {
     if((window as any).ethereum){
       //check if Metamask wallet is installed
-      setIsWalletInstalled(true);
+      setIsMetamaskInstalled(true);
     }
   },[]);
 
-  async function connectWallet(): Promise<void> {
+  //Does the User have an Ethereum wallet/account?
+  async function connectMetamaskWallet(): Promise<void> {
     //to get around type checking
     (window as any).ethereum
       .request({
           method: "eth_requestAccounts",
       })
-      .then((accounts : any) => {
-          setAccount(accounts[0]);
+      .then((accounts : string[]) => {
+        setEthereumAccount(accounts[0]);
       })
       .catch((error: any) => {
           alert(`Something went wrong: ${error}`);
       });
   }
 
-  if (account === null) {
+  if (ethereumAccount === null) {
     return (
       <div className="App App-header">
         { 
-          isWalletInstalled ? (
+          isMetamaskInstalled ? (
             <div>
-              <img src={logo} className="App-logo" alt="logo" />
-              <button onClick={connectWallet}>Connect Your Metamask Wallet</button>
+              <img src={logo} alt="logo" />
+              <button onClick={connectMetamaskWallet}>Connect Your Metamask Wallet</button>
             </div>
           ) : (
             <p>Install Your Metamask wallet</p>
@@ -53,7 +54,7 @@ const App: React.FC = () => {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          ETH wallet connected as: {account}
+          ETH wallet connected as: {ethereumAccount}
         </p>
       </header>
     </div>
